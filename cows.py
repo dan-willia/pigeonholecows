@@ -9,7 +9,7 @@ WIDTH = 600
 class Cow:
     def __init__(self, name: str, color: tuple[int, int, int], 
                  pos: tuple[int, int], dir: tuple[int, int],
-                 nearest_neighbor: tuple[str, float] = None):
+                 nearest_neighbor: 'Cow' = None):
         self.name=name
         self.color=color
         self.pos=pos
@@ -17,7 +17,7 @@ class Cow:
         self.nearest_neighbor = nearest_neighbor
     
     def __str__(self):
-        return f"Cow(name={self.name},color={self.color},pos={self.pos},dir={self.dir},nn={self.nearest_neighbor})"
+        return f"Cow(name={self.name},color={self.color},pos={self.pos},dir={self.dir},nn={self.nearest_neighbor.name})"
 
     def update_pos(self):
         x,y=self.pos
@@ -34,10 +34,40 @@ class Cow:
             x,y=self.dir
             self.dir=x,-y
 
-    def set_nearest_neighbor(self,nearest_neighbor: tuple[str, float]):
+    def set_nearest_neighbor(self,nearest_neighbor: 'Cow'):
         self.nearest_neighbor = nearest_neighbor
 
 #----non-class functions----#
+
+def create_cows():
+    # a-j represent starting coordinates
+    a,b=(random.choice(range(WIDTH-RADIUS+5)),random.choice(range(WIDTH-RADIUS+5)))
+    c,d=(random.choice(range(WIDTH-RADIUS+5)),random.choice(range(WIDTH-RADIUS+5)))
+    e,f=(random.choice(range(WIDTH-RADIUS+5)),random.choice(range(WIDTH-RADIUS+5)))
+    g,h=(random.choice(range(WIDTH-RADIUS+5)),random.choice(range(WIDTH-RADIUS+5)))
+    i,j=(random.choice(range(WIDTH-RADIUS+5)),random.choice(range(WIDTH-RADIUS+5)))
+    # Cow 1
+    cow_1 = Cow("cow_1", (255,0,0), (a,b), 
+                    (random.choice(range(-5,6)), 
+                    random.choice(range(-5,6))))
+    # Cow 2
+    cow_2 = Cow("cow_2", (130, 224, 170), (c,d),
+                    (random.choice(range(-5,6)), 
+                    random.choice(range(-5,6))))
+    # Cow 3
+    cow_3 = Cow("cow_3", (133, 193, 233), (e,f),
+                    (random.choice(range(-5,6)), 
+                    random.choice(range(-5,6))))
+    # Cow 4
+    cow_4 = Cow("cow_4", (237, 187, 153), (g,h),
+                    (random.choice(range(-5,6)), 
+                    random.choice(range(-5,6))))
+    # Cow 5
+    cow_5 = Cow("cow_5", (165, 105, 189), (i,j),
+                    (random.choice(range(-5,6)), 
+                    random.choice(range(-5,6))))
+    Cows = [cow_1,cow_2,cow_3,cow_4,cow_5]
+    return Cows
 
 def distance(cow1: Cow, cow2: Cow) -> float:
     # calculates distance between two cows
@@ -60,7 +90,7 @@ def find_nearest_neighbor(loc: list[Cow]) -> None:
                 d=distance(cur_cow, other_cow)
                 if d<min:
                     min=d
-                    cur_cow.nearest_neighbor = other_cow.name, d
+                    cur_cow.nearest_neighbor = other_cow
 
 def get_cow_from_name(name: str, loc: list[Cow]) -> Cow:
     ''' assume unique names in input list; assume cow in list'''
@@ -72,7 +102,7 @@ def find_min_distance(loc: list[Cow]) -> Cow:
     ''' returns the cow with the nearest nearest neighbor in loc'''
     min=10**6
     for cw in loc:
-        cur_min = cw.nearest_neighbor[1]
+        cur_min = distance(cw,cw.nearest_neighbor)
         if cur_min<min:
             min=cur_min
             ret=cw
